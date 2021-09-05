@@ -8,6 +8,7 @@ import logging
 import re
 # from datetime import datetime
 
+
 from Patent import runLoki 
 from Dataset import Patent_Articut
 from pprint import pprint
