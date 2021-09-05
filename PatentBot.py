@@ -46,16 +46,20 @@ from requests import post
 from requests import codes
 import math
 try:
-    from intent import Loki_Type
     from intent import Loki_IPC_Number
+    from intent import Loki_Type
 except:
-    from .intent import Loki_Type
     from .intent import Loki_IPC_Number
+    from .intent import Loki_Type
 
-
+import json
+    
+with open("account.info", encoding="utf-8") as f:
+    accountDICT = json.loads(f.read())
+    
 LOKI_URL = "https://api.droidtown.co/Loki/BulkAPI/"
-USERNAME = ""
-LOKI_KEY = ""
+USERNAME = accountDICT["username"]
+LOKI_KEY = accountDICT["loki_key"]
 # 意圖過濾器說明
 # INTENT_FILTER = []        => 比對全部的意圖 (預設)
 # INTENT_FILTER = [intentN] => 僅比對 INTENT_FILTER 內的意圖
@@ -170,13 +174,13 @@ def runLoki(inputLIST, filterLIST=[]):
     if lokiRst.getStatus():
         for index, key in enumerate(inputLIST):
             for resultIndex in range(0, lokiRst.getLokiLen(index)):
-                # Type
-                if lokiRst.getIntent(index, resultIndex) == "Type":
-                    resultDICT = Loki_Type.getResult(key, lokiRst.getUtterance(index, resultIndex), lokiRst.getArgs(index, resultIndex), resultDICT)
-
                 # IPC_Number
                 if lokiRst.getIntent(index, resultIndex) == "IPC_Number":
                     resultDICT = Loki_IPC_Number.getResult(key, lokiRst.getUtterance(index, resultIndex), lokiRst.getArgs(index, resultIndex), resultDICT)
+
+                # Type
+                if lokiRst.getIntent(index, resultIndex) == "Type":
+                    resultDICT = Loki_Type.getResult(key, lokiRst.getUtterance(index, resultIndex), lokiRst.getArgs(index, resultIndex), resultDICT)
 
     else:
         resultDICT = {"msg": lokiRst.getMessage()}
@@ -189,20 +193,28 @@ def testLoki(inputLIST, filterLIST):
 
 
 if __name__ == "__main__":
-    # Type
-    print("[TEST] Type")
-    inputLIST = ['M','m','發明','查找發明','我要看發明','有發明的嗎']
-    testLoki(inputLIST, ['Type'])
-    print("")
-
     # IPC_Number
-    print("[TEST] IPC_Number")
-    inputLIST = ['24','後付的','G06Q-02024','信用方案','轉帳的有嗎','我要找預付的','可以找到預付的嗎','後付的有哪些專利','查現付的相關專利','跟預付系統有關的是誰','我想要比對跟轉帳相關的專利']
-    testLoki(inputLIST, ['IPC_Number'])
-    print("")
+    #print("[TEST] IPC_Number")
+    #inputLIST = ['24','後付的','G06Q-02024','信用方案','轉帳的有嗎','我要找預付的','可以找到預付的嗎','後付的有哪些專利','查現付的相關專利','跟預付系統有關的是誰','我想要比對跟轉帳相關的專利','我想比對轉帳類別下跟發明相關的專利']
+    #testLoki(inputLIST, ['IPC_Number'])
+    #print("")
+
+    # Type
+    #print("[TEST] Type")
+    #inputLIST = ['M','m','發明','查找發明','我要看發明','有發明的嗎','我想比對轉帳類別下跟發明相關的專利']
+    #testLoki(inputLIST, ['Type'])
+    #print("")
 
     # 輸入其它句子試看看
-    #inputLIST = ["輸入你的內容1", "輸入你的內容2"]
-    #filterLIST = []
-    #resultDICT = runLoki(inputLIST, filterLIST)
-    #print("Result => {}".format(resultDICT))
+    inputLIST = ["我想找發明"] 
+    filterLIST = []
+    resultDICT = runLoki(inputLIST, filterLIST)
+    print("Result => {}".format(resultDICT))
+        
+    # 測試衝突句子
+    if "不確定" in resultDICT.values():
+        print("IPC_Number或類別輸入錯誤!")
+    elif "IPC_Number" in resultDICT.keys() and "Type" in resultDICT.keys():
+        print("\n您想比對的是IPC_Number為{}中類別為{}的專利，對嗎?".format(resultDICT["IPC_Number"], resultDICT["Type"]))
+    else:
+        pass
