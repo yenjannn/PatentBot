@@ -115,7 +115,7 @@ async def on_message(message):
                     replySTR = lokiResultDICT[k]
                     print("Loki msg:", replySTR, "\n")
                     await message.reply(replySTR)     # 有更動
-                    return                    
+                    # return                    
                 elif k == "confirm":
                     if lokiResultDICT["confirm"]:
                         replySTR = "正在為您比對的是IPC_Number為{}中類別為{}的專利，請您稍後片刻，謝謝...".format(mscDICT[client.user.id]["IPC_Number"], mscDICT[client.user.id]["Type"]).replace("    ", "")
@@ -124,14 +124,14 @@ async def on_message(message):
                         replySTR = "請重新輸入您想比對哪個領域的專利範圍，謝謝"
                         await message.reply(replySTR)
                         del mscDICT[client.user.id]["Content"]
-                        return
+                        # return
             
                         
             if mscDICT[client.user.id]["IPC_Number"] != "" and mscDICT[client.user.id]["Type"] != "":
                 replySTR = "請輸入您想比對的專利範圍..."
                 print("Loki msg:", replySTR, "\n")
                 await message.reply(replySTR)     # 有更動
-                return  
+                # return  
             
             
         mscDICT[client.user.id]["Content"] = msgSTR
@@ -142,7 +142,7 @@ async def on_message(message):
             mscDICT[client.user.id]["ArticutresultDICT"] = ArticutresultDICT
             replySTR = "再次確認您想比對的是IPC_Number為{}中類別為{}的專利，沒錯嗎?".format(mscDICT[client.user.id]["IPC_Number"], mscDICT[client.user.id]["Type"])
             await message.reply(replySTR)         
-            return
+            # return
         
                 
         if set(patentTemplate.keys()).difference(mscDICT[client.user.id].keys()) == set():
