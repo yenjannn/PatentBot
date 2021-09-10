@@ -134,27 +134,27 @@ async def on_message(message):
                 return  
             
             
-            mscDICT[client.user.id]["Content"] = msgSTR
+        mscDICT[client.user.id]["Content"] = msgSTR
                 
-            ArticutresultDICT = getArticutResult(mscDICT[client.user.id]["IPC_Number"], mscDICT[client.user.id]["Type"], mscDICT[client.user.id]["Content"])
+        ArticutresultDICT = getArticutResult(mscDICT[client.user.id]["IPC_Number"], mscDICT[client.user.id]["Type"], mscDICT[client.user.id]["Content"])
                 
-            if ArticutresultDICT:
-                mscDICT[client.user.id]["ArticutresultDICT"] = ArticutresultDICT
-                replySTR = "再次確認您想比對的是IPC_Number為{}中類別為{}的專利，沒錯嗎?".format(mscDICT[client.user.id]["IPC_Number"], mscDICT[client.user.id]["Type"])
-                await message.reply(replySTR)         
-                return
+        if ArticutresultDICT:
+            mscDICT[client.user.id]["ArticutresultDICT"] = ArticutresultDICT
+            replySTR = "再次確認您想比對的是IPC_Number為{}中類別為{}的專利，沒錯嗎?".format(mscDICT[client.user.id]["IPC_Number"], mscDICT[client.user.id]["Type"])
+            await message.reply(replySTR)         
+            return
         
                 
-            if set(patentTemplate.keys()).difference(mscDICT[client.user.id].keys()) == set():
-                url = "https://twpat4.tipo.gov.tw/tipotwoc/tipotwkm?!!FR_" + list(mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"].keys())[0]
-                replySTR = """為您找到最相似的專利為證書號 {} 的專利，
-                其"{}"的餘弦相似度經過Articut的分析為 {} ，
-                更完整的專利文件請參考: {}""".format(list(mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"].keys())[0], 
-                                                   mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"][list(mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"].keys())[0]][1], 
-                                                   mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"][list(mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"].keys())[0]][0],
-                                                   url).replace("    ", "")
-                await message.reply(replySTR)
-                mscDICT[client.user.id]["completed"] = True
+        if set(patentTemplate.keys()).difference(mscDICT[client.user.id].keys()) == set():
+            url = "https://twpat4.tipo.gov.tw/tipotwoc/tipotwkm?!!FR_" + list(mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"].keys())[0]
+            replySTR = """為您找到最相似的專利為證書號 {} 的專利，
+            其"{}"的餘弦相似度經過Articut的分析為 {} ，
+            更完整的專利文件請參考: {}""".format(list(mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"].keys())[0], 
+                                               mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"][list(mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"].keys())[0]][1], 
+                                               mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"][list(mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"].keys())[0]][0],
+                                               url).replace("    ", "")
+            await message.reply(replySTR)
+            mscDICT[client.user.id]["completed"] = True
         
         print("mscDICT = ")
         pprint(mscDICT) 
