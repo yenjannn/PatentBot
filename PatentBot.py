@@ -48,15 +48,17 @@ import math
 try:
     from intent import Loki_IPC_Number
     from intent import Loki_Type
+    from intent import Loki_Probe
 except:
     from .intent import Loki_IPC_Number
     from .intent import Loki_Type
+    from .intent import Loki_Probe
 
 import json
-    
+
 with open("account.info", encoding="utf-8") as f:
     accountDICT = json.loads(f.read())
-    
+
 LOKI_URL = "https://api.droidtown.co/Loki/BulkAPI/"
 USERNAME = accountDICT["username"]
 LOKI_KEY = accountDICT["loki_key"]
@@ -182,6 +184,10 @@ def runLoki(inputLIST, filterLIST=[]):
                 if lokiRst.getIntent(index, resultIndex) == "Type":
                     resultDICT = Loki_Type.getResult(key, lokiRst.getUtterance(index, resultIndex), lokiRst.getArgs(index, resultIndex), resultDICT)
 
+                # Probe
+                if lokiRst.getIntent(index, resultIndex) == "Probe":
+                    resultDICT = Loki_Probe.getResult(key, lokiRst.getUtterance(index, resultIndex), lokiRst.getArgs(index, resultIndex), resultDICT)
+
     else:
         resultDICT = {"msg": lokiRst.getMessage()}
     return resultDICT
@@ -205,12 +211,18 @@ if __name__ == "__main__":
     #testLoki(inputLIST, ['Type'])
     #print("")
 
+    # Probe
+    #print("[TEST] Probe")
+    #inputLIST = ['對','是','不對','不是','正確','沒錯','不正確']
+    #testLoki(inputLIST, ['Probe'])
+    #print("")
+
     # 輸入其它句子試看看
-    inputLIST = ["我想找發明"] 
+    inputLIST = ["設計"]
     filterLIST = []
     resultDICT = runLoki(inputLIST, filterLIST)
     print("Result => {}".format(resultDICT))
-        
+
     # 測試衝突句子
     if "不確定" in resultDICT.values():
         print("IPC_Number或類別輸入錯誤!")

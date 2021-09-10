@@ -23,8 +23,8 @@ def wordExtractor(inputLIST, unify=True):
         return sorted(list(set(resultLIST)))
     else:
         return sorted(resultLIST)
-    
-    
+
+
 def counterCosineSimilarity(counter01, counter02):
     '''
     計算 counter01 和 counter02 兩者的餘弦相似度
@@ -49,18 +49,18 @@ def lengthSimilarity(counter01, counter02):
 def articut4PatentBot(category, inputSTR):
     with open("account.info", encoding="utf-8") as f:
         userinfoDICT = json.loads(f.read())
-        
+
     articut = Articut(username=userinfoDICT["username"], apikey=userinfoDICT["apikey"], level="lv1")
-    
+
     # 讀入對應類別的專利文本
-    patent_file = category +'.json'
+    patent_file = category + '.json'
     with open(patent_file, encoding='utf-8') as f:
       patentDICT = json.loads(f.read())
-    
+
     CertificateNumber = list(patentDICT.keys())
-    
+
     # 接收使用者輸入的專利範圍
-    userSTR = inputSTR.replace(" ", "").replace("\n", "")   
+    userSTR = inputSTR.replace(" ", "").replace("\n", "")
     userResultDICT = articut.parse(userSTR)
 
     # 將類別中的專利範圍全部比對一次
@@ -82,7 +82,7 @@ def articut4PatentBot(category, inputSTR):
       VerbCosineSimilarity.append(patent2userSIM)
 
 
-    
+
     # 取得「名詞」做為特徵列表
       patentNounLIST = articut.getNounStemLIST(STRResultDICT)
       userNounLIST = articut.getNounStemLIST(userResultDICT)
@@ -93,8 +93,8 @@ def articut4PatentBot(category, inputSTR):
       patent2userSIM = counterCosineSimilarity(patentCOUNT, userCOUNT)
       NounCosineSimilarity.append(patent2userSIM)
 
-    
-    
+
+
     # 取得「TF-IDF」做為特徵列表
       patentTFIDFLIST = articut.analyse.extract_tags(STRResultDICT)
       userTFIDFLIST = articut.analyse.extract_tags(userResultDICT)
@@ -106,26 +106,39 @@ def articut4PatentBot(category, inputSTR):
       TFIDFCosineSimilarity.append(patent2userSIM)
 
 
-    
+    ArticutresultDICT = {}
     max_Verb = max(VerbCosineSimilarity)
     v = VerbCosineSimilarity.index(max_Verb)
     # print("[專利文本 vs. 使用者輸入文本] 的動詞餘弦相似度:{}".format(VerbCosineSimilarity))
     # print("最大值為{:.2f}來自證書書號{}的專利範圍".format(max_Verb, CertificateNumber[v]))
+    ArticutresultDICT["Verb"] = {}
+    ArticutresultDICT["Verb"][CertificateNumber[v]] = max_Verb
 
     max_Noun = max(NounCosineSimilarity)
     n = NounCosineSimilarity.index(max_Noun)
     # print("[專利文本 vs. 使用者輸入文本] 的名詞餘弦相似度:{}".format(NounCosineSimilarity))
     # print("最大值為{:.2f}來自證書書號{}的專利範圍".format(max_Noun, CertificateNumber[n]))
-    
-    max_TFIDF = max(TFIDFCosineSimilarity) 
-    t = TFIDFCosineSimilarity.index(max_TFIDF)   
+    ArticutresultDICT["Noun"] = {}
+    ArticutresultDICT["Noun"][CertificateNumber[n]] = max_Noun
+
+    max_TFIDF = max(TFIDFCosineSimilarity)
+    t = TFIDFCosineSimilarity.index(max_TFIDF)
     # print("[專利文本 vs. 使用者輸入文本] 的 TF-IDF 特徵詞餘弦相似度:{}".format(TFIDFCosineSimilarity))
     # print("最大值為{:.2f}來自證書書號{}的專利範圍".format(max_TFIDF, CertificateNumber[t]))
+    ArticutresultDICT["TFIDF"] = {}
+    ArticutresultDICT["TFIDF"][CertificateNumber[t]] = max_TFIDF
 
+    ArticutresultDICT["All_Max"] = {}
     m = max(max_Verb, max_Noun, max_TFIDF)
-    a = NounCosineSimilarity.index(max_Noun)
-    Cert_No = CertificateNumber[a]
-    return Cert_No
+    if m == max_Noun:
+      ArticutresultDICT["All_Max"][CertificateNumber[n]] = [m, "名詞"]
+    elif m == max_Verb:
+      ArticutresultDICT["All_Max"][CertificateNumber[v]] = [m, "動詞"]
+    elif m == max_TFIDF:
+      ArticutresultDICT["All_Max"][CertificateNumber[t]] = [m, "TF-IDF"]
+
+
+    return ArticutresultDICT
 
 
 # 測試用
