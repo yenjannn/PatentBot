@@ -24,6 +24,8 @@ patentTemplate = {"IPC_Number":"",
                   "completed":""}
 
 mscDICT = {}
+
+codeDICT = {"_M": "新型", "_I": "發明", "_D": "設計"} # 可另外新建一個dict在import
 # </取得多輪對話資訊>
 
 with open("account.info", encoding="utf-8") as f:
@@ -43,7 +45,7 @@ def getLokiResult(inputSTR):
 
 # 接上Articut分析模型: articut4PatentBot
 def getArticutResult(IPC_Number, Type, inputSTR):
-    category = IPC_Number + Type
+    categoryFILE = IPC_Number + Type
     resultDICT = articut4PatentBot(category, inputSTR)
     print("Articut Result => {}".format(resultDICT))
     return resultDICT
@@ -66,6 +68,7 @@ async def on_message(message):
     
     print("收到來自 {} 的訊息".format(client.user), "\n訊息內容是 {}: ".format(message.content))
     msgSTR = re.sub("<@[!&]{}> ?".format(client.user.id), "", message.content)    # 收到 User 的訊息，將 id 取代成 ""
+    msgSTR = re.sub("[喔啊耶呢滴]", "。", msgSTR)
     print("msgSTR =", msgSTR)
     replySTR = ""    # Bot 回應訊息
 
@@ -82,23 +85,23 @@ async def on_message(message):
                 mscDICT[client.user.id] = {"completed":False}
                 
             for k in lokiResultDICT:    # 將 Loki Intent 的結果，存進 Global mscDICT 變數，可替換成 Database。
-                if k == "IPC_Number":
+                if "IPC_Number" in lokiResultDICT.keys() and k == "IPC_Number":
                     mscDICT[client.user.id]["IPC_Number"] = lokiResultDICT["IPC_Number"]
-                elif k == "Type":
-                    mscDICT[client.user.id]["Type"] = lokiResultDICT["Type"]
-                elif k == "msg":
+                if "Type" in lokiResultDICT.keys() and k == "Type":
+                    mscDICT[client.user.id]["Type"] = lokiResultDICT["Type"]                    
+                if k == "msg":  # 調整
                     replySTR = lokiResultDICT[k]
                     print("Loki msg:", replySTR, "\n")
                     await message.reply(replySTR)
                     return                    
-                elif k == "confirm":
+                if k == "confirm":
                     if lokiResultDICT["confirm"]:
-                        replySTR = "正在為您比對的是IPC_Number為{}中類別為{}的專利，請您稍後片刻，謝謝...".format(mscDICT[client.user.id]["IPC_Number"], mscDICT[client.user.id]["Type"]).replace("    ", "")
+                        replySTR = "正在為您比對的是IPC_Number為{}中類別為{}的專利，請您稍後片刻，謝謝...".format(mscDICT[client.user.id]["IPC_Number"], codeDICT[mscDICT[client.user.id]["Type"]]).replace("    ", "")
                         await message.reply(replySTR)
                         if set(patentTemplate.keys()).difference(mscDICT[client.user.id].keys()) == set():
                             url = "https://twpat4.tipo.gov.tw/tipotwoc/tipotwkm?!!FR_" + list(mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"].keys())[0]
                             replySTR = """為您找到最相似的專利為證書號 {} 的專利，
-                            其"{}"的餘弦相似度經過Articut的分析為 {} ，
+                            其"{}"的餘弦相似度經過Articut的分析為 {:.2f} ，
                             更完整的專利文件請參考: {}""".format(list(mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"].keys())[0], 
                                                                mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"][list(mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"].keys())[0]][1], 
                                                                mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"][list(mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"].keys())[0]][0],
