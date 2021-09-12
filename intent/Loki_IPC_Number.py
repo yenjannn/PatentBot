@@ -146,9 +146,9 @@ def getResult(inputSTR, utterance, args, resultDICT):
         for a in args[1:4]:
             if a in userDefinedDICT["G06Q_020_24"]:
                 confusion.append("G06Q_020_24")
-            elif a in userDefinedDICT["G06Q_020_26"]:
+            if a in userDefinedDICT["G06Q_020_26"]:
                 confusion.append("G06Q_020_26")
-            elif a in userDefinedDICT["G06Q_020_28"]:
+            if a in userDefinedDICT["G06Q_020_28"]:
                 confusion.append("G06Q_020_28")
         if len(confusion) > 1:
             resultDICT["IPC_Number"] = "不確定"

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-# 需要將計算餘弦相似度的函式重新組合成"counterCosineSimilarity"
 
 from collections import Counter
 from ArticutAPI import Articut
 import json
 import math
+#from Dataset import patent
 
 def wordExtractor(inputLIST, unify=True):
     '''
@@ -25,7 +25,7 @@ def wordExtractor(inputLIST, unify=True):
         return sorted(resultLIST)
 
 
-def counterCosineSimilarity(counter01, counter02):
+def counterCosineSimilarity(counter01, counter02, w=1):  # 這裡可以改權重做分析
     '''
     計算 counter01 和 counter02 兩者的餘弦相似度
     '''
@@ -33,7 +33,7 @@ def counterCosineSimilarity(counter01, counter02):
     dotprod = sum(counter01.get(k, 0) * counter02.get(k, 0) for k in terms)
     magA = math.sqrt(sum(counter01.get(k, 0)**2 for k in terms))
     magB = math.sqrt(sum(counter02.get(k, 0)**2 for k in terms))
-    return dotprod / (magA * magB)
+    return (dotprod / (magA * magB))*w
 
 
 def lengthSimilarity(counter01, counter02):
@@ -53,6 +53,7 @@ def articut4PatentBot(category, inputSTR):
     articut = Articut(username=userinfoDICT["username"], apikey=userinfoDICT["apikey"], level="lv1")
 
     # 讀入對應類別的專利文本
+    # Dataset.patent.categoryDICT  全部存入patent.py檔
     patent_file = category + '.json'
     with open(patent_file, encoding='utf-8') as f:
       patentDICT = json.loads(f.read())
@@ -75,8 +76,8 @@ def articut4PatentBot(category, inputSTR):
       patentVerbLIST = articut.getVerbStemLIST(STRResultDICT)
       userVerbLIST = articut.getVerbStemLIST(userResultDICT)
       # 利用 Counter() 模組計算每個動詞出現的次數
-      patentCOUNT = Counter(wordExtractor(patentVerbLIST, unify=False))
-      userCOUNT = Counter(wordExtractor(userVerbLIST, unify=False))
+      patentCOUNT = Counter(wordExtractor(patentVerbLIST, unify=True))
+      userCOUNT = Counter(wordExtractor(userVerbLIST, unify=True))
       # 計算 [專利文本 vs. 使用者輸入文本] 的餘弦相似度
       patent2userSIM = counterCosineSimilarity(patentCOUNT, userCOUNT)
       VerbCosineSimilarity.append(patent2userSIM)
@@ -87,8 +88,8 @@ def articut4PatentBot(category, inputSTR):
       patentNounLIST = articut.getNounStemLIST(STRResultDICT)
       userNounLIST = articut.getNounStemLIST(userResultDICT)
       # 利用 Counter() 模組計算每個名詞出現的次數
-      patentCOUNT = Counter(wordExtractor(patentNounLIST, unify=False))
-      userCOUNT = Counter(wordExtractor(userNounLIST, unify=False))
+      patentCOUNT = Counter(wordExtractor(patentNounLIST, unify=True))
+      userCOUNT = Counter(wordExtractor(userNounLIST, unify=True))
       # 計算 [專利文本 vs. 使用者輸入文本] 的餘弦相似度
       patent2userSIM = counterCosineSimilarity(patentCOUNT, userCOUNT)
       NounCosineSimilarity.append(patent2userSIM)

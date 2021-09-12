@@ -46,7 +46,7 @@ def getLokiResult(inputSTR):
 # 接上Articut分析模型: articut4PatentBot
 def getArticutResult(IPC_Number, Type, inputSTR):
     categoryFILE = IPC_Number + Type
-    resultDICT = articut4PatentBot(category, inputSTR)
+    resultDICT = articut4PatentBot(categoryFILE, inputSTR)
     print("Articut Result => {}".format(resultDICT))
     return resultDICT
 
@@ -68,7 +68,7 @@ async def on_message(message):
     
     print("收到來自 {} 的訊息".format(client.user), "\n訊息內容是 {}: ".format(message.content))
     msgSTR = re.sub("<@[!&]{}> ?".format(client.user.id), "", message.content)    # 收到 User 的訊息，將 id 取代成 ""
-    msgSTR = re.sub("[喔啊耶呢滴]", "。", msgSTR)
+    msgSTR = re.sub("[喔啊耶呢滴]", "。", msgSTR)  # 將語尾助詞取代成"。"
     print("msgSTR =", msgSTR)
     replySTR = ""    # Bot 回應訊息
 
@@ -89,15 +89,19 @@ async def on_message(message):
                     mscDICT[client.user.id]["IPC_Number"] = lokiResultDICT["IPC_Number"]
                 if "Type" in lokiResultDICT.keys() and k == "Type":
                     mscDICT[client.user.id]["Type"] = lokiResultDICT["Type"]                    
-                if k == "msg":  # 調整
+                if "msg" in lokiResultDICT.keys() and k == "msg" and (("IPC_Number" or "Type") not in mscDICT[client.user.id].keys()):
                     replySTR = lokiResultDICT[k]
                     print("Loki msg:", replySTR, "\n")
                     await message.reply(replySTR)
                     return                    
-                if k == "confirm":
+                if "confirm" in lokiResultDICT and k == "confirm":
                     if lokiResultDICT["confirm"]:
-                        replySTR = "正在為您比對的是IPC_Number為{}中類別為{}的專利，請您稍後片刻，謝謝...".format(mscDICT[client.user.id]["IPC_Number"], codeDICT[mscDICT[client.user.id]["Type"]]).replace("    ", "")
+                        replySTR = "正在為您比對的是IPC_Number為{}中類型為{}的專利，請您稍後片刻，謝謝...".format(mscDICT[client.user.id]["IPC_Number"], codeDICT[mscDICT[client.user.id]["Type"]]).replace("    ", "")
                         await message.reply(replySTR)
+                        # 確認後將文本送入Articut分析
+                        ArticutresultDICT = getArticutResult(mscDICT[client.user.id]["IPC_Number"], mscDICT[client.user.id]["Type"], mscDICT[client.user.id]["Content"])
+                        mscDICT[client.user.id]["ArticutresultDICT"] = ArticutresultDICT
+                        # 檢查是否已經完成對話
                         if set(patentTemplate.keys()).difference(mscDICT[client.user.id].keys()) == set():
                             url = "https://twpat4.tipo.gov.tw/tipotwoc/tipotwkm?!!FR_" + list(mscDICT[client.user.id]["ArticutresultDICT"]["All_Max"].keys())[0]
                             replySTR = """為您找到最相似的專利為證書號 {} 的專利，
@@ -112,12 +116,11 @@ async def on_message(message):
                             pprint(mscDICT)    
                             if mscDICT[client.user.id]["completed"]:    # 清空 User Dict
                                 del mscDICT[client.user.id]
-                        return   #需要強制終止在這裡
+                        return
                         
                     else:
-                        replySTR = "請重新輸入您想比對哪個領域的專利範圍，謝謝"
+                        replySTR = "請重新輸入您想比對哪個領域的專利範圍..."
                         await message.reply(replySTR)
-                        del mscDICT[client.user.id]["Content"]
                         return
                 
             if mscDICT[client.user.id]["IPC_Number"] != "" and mscDICT[client.user.id]["Type"] != "":
@@ -125,20 +128,20 @@ async def on_message(message):
                 print("Loki msg:", replySTR, "\n")
                 await message.reply(replySTR)
                 return  
+        else:
+            replySTR = "您輸入的領域或類型似乎是錯誤的，請重新輸入..."
+            await message.reply(replySTR)
+            return
             
     else:
-        mscDICT[client.user.id]["Content"] = msgSTR 
-        ArticutresultDICT = getArticutResult(mscDICT[client.user.id]["IPC_Number"], mscDICT[client.user.id]["Type"], mscDICT[client.user.id]["Content"])
-        
-        if ArticutresultDICT:
-            mscDICT[client.user.id]["ArticutresultDICT"] = ArticutresultDICT
-            replySTR = "再次確認您想比對的是IPC_Number為{}中類別為{}的專利，沒錯嗎?".format(mscDICT[client.user.id]["IPC_Number"], mscDICT[client.user.id]["Type"])
-            await message.reply(replySTR)         
-            return   
+        mscDICT[client.user.id]["Content"] = msgSTR
+        replySTR = "再次確認您想比對的是IPC_Number為{}中類型為{}的專利，沒錯嗎?".format(mscDICT[client.user.id]["IPC_Number"], codeDICT[mscDICT[client.user.id]["Type"]])        
+        await message.reply(replySTR) 
+        return 
+          
                       
                       
                       
-
 
 if __name__ == "__main__":
     client.run(accountDICT["discord_token"])

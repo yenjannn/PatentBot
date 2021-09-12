@@ -27,50 +27,65 @@ def getResult(inputSTR, utterance, args, resultDICT):
     if utterance == "[我]要看[發明]":
         if args[1] in userDefinedDICT["D"]:
             resultDICT["Type"] = "_D"
+            resultDICT["msg"] = "您想找什麼領域? (信用方案、轉帳方案、預付方案)"
         elif args[1] in userDefinedDICT["I"]:
             resultDICT["Type"] = "_I"
+            resultDICT["msg"] = "您想找什麼領域? (信用方案、轉帳方案、預付方案)"
         elif args[1] in userDefinedDICT["M"]:
             resultDICT["Type"] = "_M"
+            resultDICT["msg"] = "您想找什麼領域? (信用方案、轉帳方案、預付方案)"
         else:
             pass
 
     if utterance == "[發明]":
         if args[0] in userDefinedDICT["D"]:
             resultDICT["Type"] = "_D"
+            resultDICT["msg"] = "您想找什麼領域? (信用方案、轉帳方案、預付方案)"
         elif args[0] in userDefinedDICT["I"]:
             resultDICT["Type"] = "_I"
+            resultDICT["msg"] = "您想找什麼領域? (信用方案、轉帳方案、預付方案)"
         elif args[0] in userDefinedDICT["M"]:
             resultDICT["Type"] = "_M"
+            resultDICT["msg"] = "您想找什麼領域? (信用方案、轉帳方案、預付方案)"
         else:
             pass
 
     if utterance == "有[發明]的嗎":
         if args[0] in userDefinedDICT["D"]:
             resultDICT["Type"] = "_D"
+            resultDICT["msg"] = "您想找什麼領域? (信用方案、轉帳方案、預付方案)"
         elif args[0] in userDefinedDICT["I"]:
             resultDICT["Type"] = "_I"
+            resultDICT["msg"] = "您想找什麼領域? (信用方案、轉帳方案、預付方案)"
         elif args[0] in userDefinedDICT["M"]:
             resultDICT["Type"] = "_M"
+            resultDICT["msg"] = "您想找什麼領域? (信用方案、轉帳方案、預付方案)"
         else:
             pass
 
     if utterance == "查找[發明]":
         if args[0] in userDefinedDICT["D"]:
             resultDICT["Type"] = "_D"
+            resultDICT["msg"] = "您想找什麼領域? (信用方案、轉帳方案、預付方案)"
         elif args[0] in userDefinedDICT["I"]:
             resultDICT["Type"] = "_I"
+            resultDICT["msg"] = "您想找什麼領域? (信用方案、轉帳方案、預付方案)"
         elif args[0] in userDefinedDICT["M"]:
             resultDICT["Type"] = "_M"
+            resultDICT["msg"] = "您想找什麼領域? (信用方案、轉帳方案、預付方案)"
         else:
             pass
 
     if utterance == "[M]":
         if args[0] in userDefinedDICT["D"]:
             resultDICT["Type"] = "_D"
+            resultDICT["msg"] = "您想找什麼領域? (信用方案、轉帳方案、預付方案)"
         elif args[0] in userDefinedDICT["I"]:
             resultDICT["Type"] = "_I"
+            resultDICT["msg"] = "您想找什麼領域? (信用方案、轉帳方案、預付方案)"
         elif args[0] in userDefinedDICT["M"]:
             resultDICT["Type"] = "_M"
+            resultDICT["msg"] = "您想找什麼領域? (信用方案、轉帳方案、預付方案)"
         else:
             pass
 
@@ -79,12 +94,13 @@ def getResult(inputSTR, utterance, args, resultDICT):
         for a in args[1:4]:
             if a in userDefinedDICT["D"]:
                 confusion.append("_D")
-            elif a in userDefinedDICT["I"]:
+            if a in userDefinedDICT["I"]:
                 confusion.append("_I")
-            elif a in userDefinedDICT["M"]:
+            if a in userDefinedDICT["M"]:
                 confusion.append("_M")   
         if len(confusion) > 1:
             resultDICT["Type"] = "不確定"
+            resultDICT["msg"] = "很抱歉，我不太清楚。請您再說明一次想比對哪個領域的專利文本，謝謝!"
         elif len(confusion) == 1:
             resultDICT["Type"] = confusion[0]  
         else:
