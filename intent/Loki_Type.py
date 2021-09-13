@@ -99,7 +99,6 @@ def getResult(inputSTR, utterance, args, resultDICT):
             if a in userDefinedDICT["M"]:
                 confusion.append("_M")   
         if len(confusion) > 1:
-            resultDICT["Type"] = "不確定"
             resultDICT["msg"] = "很抱歉，我不太清楚。請您再說明一次想比對哪個領域的專利文本，謝謝!"
         elif len(confusion) == 1:
             resultDICT["Type"] = confusion[0]  

@@ -151,7 +151,6 @@ def getResult(inputSTR, utterance, args, resultDICT):
             if a in userDefinedDICT["G06Q_020_28"]:
                 confusion.append("G06Q_020_28")
         if len(confusion) > 1:
-            resultDICT["IPC_Number"] = "不確定"
             resultDICT["msg"] = "很抱歉，我不太清楚。請您再說明一次想比對哪個領域的專利文本，謝謝!"
         elif len(confusion) == 1:
             resultDICT["IPC_Number"] = confusion[0]

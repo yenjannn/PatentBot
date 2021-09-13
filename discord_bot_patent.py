@@ -24,9 +24,10 @@ patentTemplate = {"IPC_Number":"",
                   "completed":""}
 
 mscDICT = {}
-
-codeDICT = {"_M": "新型", "_I": "發明", "_D": "設計"} # 可另外新建一個dict在import
 # </取得多輪對話資訊>
+
+codeDICT = {"_M": "新型", "_I": "發明", "_D": "設計"} # 可另外新建一個dict再import
+
 
 with open("account.info", encoding="utf-8") as f:
     accountDICT = json.loads(f.read())
@@ -77,7 +78,7 @@ async def on_message(message):
         await message.reply(replySTR)
         return
     
-    if len(msgSTR) < 20:
+    if len(msgSTR) < 24:
         lokiResultDICT = getLokiResult(msgSTR) # 取得 Loki 回傳結果
         
         if lokiResultDICT:

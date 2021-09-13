@@ -31,7 +31,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
 
     if utterance == "對":
         if len(inputSTR) < 3:
-            if "不" in args[0]:
+            if "不" in inputSTR:
                 resultDICT["confirm"] = False
             else:
                 resultDICT["confirm"] = True        
