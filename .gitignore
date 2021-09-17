@@ -1,6 +1,6 @@
 account.info
 *.pyc
 *.json
-Updater.py
 test/
-Dataset/
+patentContent/
+patentKeyword/

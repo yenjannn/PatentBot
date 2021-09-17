@@ -44,7 +44,7 @@ def articut4PatentBot(categoryFILE, inputSTR):
     articut = Articut(username=userinfoDICT["username"], apikey=userinfoDICT["apikey"], level="lv1")
 
     # 讀入對應類別的專利文本
-    patentDICT = patent.categoryFILE
+    patentDICT = patent[categoryFILE]
     #patent_file = categoryFILE + '.json'
     #with open(patent_file, encoding='utf-8') as f:
     #    patentDICT = json.loads(f.read())
