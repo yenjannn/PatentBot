@@ -86,12 +86,12 @@ async def on_message(message):
         if lokiResultDICT:
             if client.user.id not in mscDICT:    # 判斷 User 是否為第一輪對話
                 mscDICT[client.user.id] = {"completed":False,
-                                           "updatetime":datetime.now()}
+                                           "updatetime":datetime.datetime.now()}
             else:
                 datetimeNow = datetime.datetime.now() # 取得當下時間
                 timeDIFF = datetimeNow - mscDICT[client.user.id]["updatetime"]
                 if timeDIFF.total_seconds() <= 300: # 以秒為單位，5分鐘內都算是舊對話
-                    msc[client.user.id]["updatetime"] = date
+                    mscDICT[client.user.id]["updatetime"] = datetimeNow
 
             for k in lokiResultDICT:    # 將 Loki Intent 的結果，存進 Global mscDICT 變數，可替換成 Database。
                 if "IPC_Number" in lokiResultDICT.keys() and k == "IPC_Number":
