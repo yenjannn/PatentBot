@@ -6,6 +6,7 @@ import logging
 import discord
 import json
 import re
+import datetime
 
 from PatentBot import runLoki
 from Patent_Articut import articut4PatentBot
@@ -21,6 +22,7 @@ patentTemplate = {"IPC_Number":"",
                   "Type":"",
                   "Content":"",
                   "ArticutresultDICT":"",
+                  "updatetime":datetime.datetime.now(),
                   "completed":""}
 
 mscDICT = {}
@@ -83,7 +85,13 @@ async def on_message(message):
 
         if lokiResultDICT:
             if client.user.id not in mscDICT:    # 判斷 User 是否為第一輪對話
-                mscDICT[client.user.id] = {"completed":False}
+                mscDICT[client.user.id] = {"completed":False,
+                                           "updatetime":datetime.now()}
+            else:
+                datetimeNow = datetime.datetime.now() # 取得當下時間
+                timeDIFF = datetimeNow - mscDICT[client.user.id]["updatetime"]
+                if timeDIFF.total_seconds() <= 300: # 以秒為單位，5分鐘內都算是舊對話
+                    msc[client.user.id]["updatetime"] = date
 
             for k in lokiResultDICT:    # 將 Loki Intent 的結果，存進 Global mscDICT 變數，可替換成 Database。
                 if "IPC_Number" in lokiResultDICT.keys() and k == "IPC_Number":
@@ -95,6 +103,7 @@ async def on_message(message):
                     print("Loki msg:", replySTR, "\n")
                     await message.reply(replySTR)
                     return
+                
                 if "confirm" in lokiResultDICT and k == "confirm":
                     if lokiResultDICT["confirm"]:
                         replySTR = "正在為您比對的是IPC_Number為{}中類型為{}的專利，請您稍後片刻，謝謝...".format(mscDICT[client.user.id]["IPC_Number"], codeDICT[mscDICT[client.user.id]["Type"]]).replace("    ", "")
@@ -129,6 +138,7 @@ async def on_message(message):
                 print("Loki msg:", replySTR, "\n")
                 await message.reply(replySTR)
                 return
+            
         else:
             replySTR = "您輸入的領域或類型似乎是錯誤的，請重新輸入..."
             await message.reply(replySTR)
