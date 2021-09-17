@@ -6,7 +6,7 @@ from collections import Counter
 from ArticutAPI import Articut
 import json
 import math
-#from Dataset import patent
+#import Dataset.patent
 
 def wordExtractor(inputLIST, unify=True):
     '''
@@ -36,27 +36,18 @@ def counterCosineSimilarity(counter01, counter02, w=1):  # 這裡可以改權重
     return (dotprod / (magA * magB))*w
 
 
-def lengthSimilarity(counter01, counter02):
-    '''
-    計算 counter01 和 counter02 兩者在長度上的相似度
-    '''
 
-    lenc1 = sum(iter(counter01.values()))
-    lenc2 = sum(iter(counter02.values()))
-    return min(lenc1, lenc2) / float(max(lenc1, lenc2))
-
-
-def articut4PatentBot(category, inputSTR):
+def articut4PatentBot(categoryFILE, inputSTR):
     with open("account.info", encoding="utf-8") as f:
         userinfoDICT = json.loads(f.read())
 
     articut = Articut(username=userinfoDICT["username"], apikey=userinfoDICT["apikey"], level="lv1")
 
     # 讀入對應類別的專利文本
-    # Dataset.patent.categoryDICT  全部存入patent.py檔
-    patent_file = category + '.json'
+    #patentDICT = Dataset.patent.categoryFILE
+    patent_file = categoryFILE + '.json'
     with open(patent_file, encoding='utf-8') as f:
-      patentDICT = json.loads(f.read())
+        patentDICT = json.loads(f.read())
 
     CertificateNumber = list(patentDICT.keys())
 
