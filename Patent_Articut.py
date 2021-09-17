@@ -6,7 +6,7 @@ from collections import Counter
 from ArticutAPI import Articut
 import json
 import math
-import Dataset.patent as patent
+#import Dataset.patent as patent
 
 def wordExtractor(inputLIST, unify=True):
     '''
@@ -44,10 +44,11 @@ def articut4PatentBot(categoryFILE, inputSTR):
     articut = Articut(username=userinfoDICT["username"], apikey=userinfoDICT["apikey"], level="lv1")
 
     # 讀入對應類別的專利文本
-    patentDICT = patent[categoryFILE]
+    #patentDICT = patent[categoryFILE]
     #patent_file = categoryFILE + '.json'
-    #with open(patent_file, encoding='utf-8') as f:
-    #    patentDICT = json.loads(f.read())
+    with open("Dataset\patent.json", encoding='utf-8') as f:
+        AllpatentDICT = json.loads(f.read())
+        patentDICT = AllpatentDICT[categoryFILE]
 
     CertificateNumber = list(patentDICT.keys())
 
@@ -60,42 +61,42 @@ def articut4PatentBot(categoryFILE, inputSTR):
     NounCosineSimilarity = []
     TFIDFCosineSimilarity = []
     for k in patentDICT.values():
-      STR = k.replace(" ", "").replace("\n", "")
-      STRResultDICT = articut.parse(STR)
-
-    # 取得「動詞」做為特徵列表
-      patentVerbLIST = articut.getVerbStemLIST(STRResultDICT)
-      userVerbLIST = articut.getVerbStemLIST(userResultDICT)
-      # 利用 Counter() 模組計算每個動詞出現的次數
-      patentCOUNT = Counter(wordExtractor(patentVerbLIST, unify=True))
-      userCOUNT = Counter(wordExtractor(userVerbLIST, unify=True))
-      # 計算 [專利文本 vs. 使用者輸入文本] 的餘弦相似度
-      patent2userSIM = counterCosineSimilarity(patentCOUNT, userCOUNT)
-      VerbCosineSimilarity.append(patent2userSIM)
-
-
-
-    # 取得「名詞」做為特徵列表
-      patentNounLIST = articut.getNounStemLIST(STRResultDICT)
-      userNounLIST = articut.getNounStemLIST(userResultDICT)
-      # 利用 Counter() 模組計算每個名詞出現的次數
-      patentCOUNT = Counter(wordExtractor(patentNounLIST, unify=True))
-      userCOUNT = Counter(wordExtractor(userNounLIST, unify=True))
-      # 計算 [專利文本 vs. 使用者輸入文本] 的餘弦相似度
-      patent2userSIM = counterCosineSimilarity(patentCOUNT, userCOUNT)
-      NounCosineSimilarity.append(patent2userSIM)
-
-
-
-    # 取得「TF-IDF」做為特徵列表
-      patentTFIDFLIST = articut.analyse.extract_tags(STRResultDICT)
-      userTFIDFLIST = articut.analyse.extract_tags(userResultDICT)
-      # 利用 Counter() 模組計算每個 TF-IDF 特徵詞出現的次數
-      patentCOUNT = Counter(patentTFIDFLIST)
-      userCOUNT = Counter(userTFIDFLIST)
-      # 計算 [專利文本 vs. 使用者輸入文本] 的 TF-IDF 餘弦相似度
-      patent2userSIM = counterCosineSimilarity(patentCOUNT, userCOUNT)
-      TFIDFCosineSimilarity.append(patent2userSIM)
+        STR = k.replace(" ", "").replace("\n", "")
+        STRResultDICT = articut.parse(STR)
+    
+        # 取得「動詞」做為特徵列表
+        patentVerbLIST = articut.getVerbStemLIST(STRResultDICT)
+        userVerbLIST = articut.getVerbStemLIST(userResultDICT)
+        # 利用 Counter() 模組計算每個動詞出現的次數
+        patentCOUNT = Counter(wordExtractor(patentVerbLIST, unify=True))
+        userCOUNT = Counter(wordExtractor(userVerbLIST, unify=True))
+        # 計算 [專利文本 vs. 使用者輸入文本] 的餘弦相似度
+        patent2userSIM = counterCosineSimilarity(patentCOUNT, userCOUNT)
+        VerbCosineSimilarity.append(patent2userSIM)
+    
+    
+    
+        # 取得「名詞」做為特徵列表
+        patentNounLIST = articut.getNounStemLIST(STRResultDICT)
+        userNounLIST = articut.getNounStemLIST(userResultDICT)
+        # 利用 Counter() 模組計算每個名詞出現的次數
+        patentCOUNT = Counter(wordExtractor(patentNounLIST, unify=True))
+        userCOUNT = Counter(wordExtractor(userNounLIST, unify=True))
+        # 計算 [專利文本 vs. 使用者輸入文本] 的餘弦相似度
+        patent2userSIM = counterCosineSimilarity(patentCOUNT, userCOUNT)
+        NounCosineSimilarity.append(patent2userSIM)
+    
+    
+    
+        # 取得「TF-IDF」做為特徵列表
+        patentTFIDFLIST = articut.analyse.extract_tags(STRResultDICT)
+        userTFIDFLIST = articut.analyse.extract_tags(userResultDICT)
+        # 利用 Counter() 模組計算每個 TF-IDF 特徵詞出現的次數
+        patentCOUNT = Counter(patentTFIDFLIST)
+        userCOUNT = Counter(userTFIDFLIST)
+        # 計算 [專利文本 vs. 使用者輸入文本] 的 TF-IDF 餘弦相似度
+        patent2userSIM = counterCosineSimilarity(patentCOUNT, userCOUNT)
+        TFIDFCosineSimilarity.append(patent2userSIM)
 
 
     ArticutresultDICT = {}
@@ -123,11 +124,11 @@ def articut4PatentBot(categoryFILE, inputSTR):
     ArticutresultDICT["All_Max"] = {}
     m = max(max_Verb, max_Noun, max_TFIDF)
     if m == max_Noun:
-      ArticutresultDICT["All_Max"][CertificateNumber[n]] = [m, "名詞"]
+        ArticutresultDICT["All_Max"][CertificateNumber[n]] = [m, "名詞"]
     elif m == max_Verb:
-      ArticutresultDICT["All_Max"][CertificateNumber[v]] = [m, "動詞"]
+        ArticutresultDICT["All_Max"][CertificateNumber[v]] = [m, "動詞"]
     elif m == max_TFIDF:
-      ArticutresultDICT["All_Max"][CertificateNumber[t]] = [m, "TF-IDF"]
+        ArticutresultDICT["All_Max"][CertificateNumber[t]] = [m, "TF-IDF"]
 
 
     return ArticutresultDICT

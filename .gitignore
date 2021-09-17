@@ -1,6 +1,5 @@
 account.info
 *.pyc
-*.json
 test/
 patentContent/
 patentKeyword/
