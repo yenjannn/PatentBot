@@ -97,6 +97,6 @@
 	- 例句：我想找發明的, 我想比對轉帳類別下跟發明相關的專利, 有後付的嗎
 
 2. 當Bot確認完你想比對的領域和類型，會請你輸入想比對的專利範圍。
-	- [範例內容]()
+	- [範例內容](https://github.com/yenjannn/PatentBot/blob/main/sample.txt)
 
 3. 輸入後PatentBot會再次跟你確認比對的領域和類型，確認無誤進入Articut分析比對內容並獲得比對結果。
