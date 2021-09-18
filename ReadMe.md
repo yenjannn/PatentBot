@@ -44,9 +44,9 @@
     "discord_token": ""
 }
 ```
-	- username 填入你的 Droidtown 使用者帳號 (email)
-	- apikey 填入你的 [Articut 金鑰](https://api.droidtown.co/member/)
-	- loki_key 填入你產生的`PatentBot`專案金鑰
+ - username 填入你的 Droidtown 使用者帳號 (email)
+ - apikey 填入你的 [Articut 金鑰](https://api.droidtown.co/member/)
+ - loki_key 填入你產生的`PatentBot`專案金鑰
 
 7. 可以直接使用此專案裡寫好的intent code，也可以下載專案使用其提供的空白intent code自由發揮。
 ![download.png](https://i.imgur.com/FaZp9uk.png)
