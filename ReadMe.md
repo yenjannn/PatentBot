@@ -112,4 +112,4 @@
 #### 聯絡資訊
 如果有任何問題或建議，請與我們聯絡，謝謝您 :)
 * Jan Yen : a4730440@gmail.com
-* Meng-Chun Tsai:
+* Meng-Chun Tsai : 96a4a19@gmail.com
