@@ -87,7 +87,7 @@
 `python3 discord_bot_patent.py`
 
 2. 在 Discord 的裡 @<你的bot> 然後就可以和它對話了！
-<video src="https://www.youtube.com/watch?v=DVxMMq-5-Jo" width="500" controls></video>
+<a href="https://www.youtube.com/watch?v=DVxMMq-5-Jo"><img src="https://i.imgur.com/uc6xfrL.png" width="500"></a>
 
 ---
 
